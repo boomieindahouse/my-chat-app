@@ -1,36 +1,49 @@
-// src/components/ChatBox.js
+// src/components/ChatBox.jsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from 'react';
+import { io } from 'socket.io-client';
+
+const socket = io('http://localhost:3000'); // เปลี่ยน URL ตามเซิร์ฟเวอร์ของคุณ
 
 export default function ChatBox() {
   const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
+  const [messageInput, setMessageInput] = useState('');
+
+  useEffect(() => {
+    // ฟังเหตุการณ์ที่รับข้อความ
+    socket.on('receive message', (msg) => {
+      setMessages((prevMessages) => [...prevMessages, msg]);
+    });
+
+    // ลบ listener เมื่อ component ถูก unmount
+    return () => {
+      socket.off('receive message');
+    };
+  }, []);
 
   const sendMessage = () => {
-    if (input) {
-      setMessages([...messages, input]);
-      setInput("");
+    if (messageInput.trim()) {
+      socket.emit('send message', messageInput); // ส่งข้อความไปยังเซิร์ฟเวอร์
+      setMessageInput(''); // เคลียร์ input
     }
   };
 
   return (
     <div>
-      <div className="border p-4 h-64 overflow-y-scroll">
+      <div className="messages">
         {messages.map((msg, index) => (
-          <div key={index} className="p-2 border-b">
-            {msg}
-          </div>
+          <div key={index}>{msg}</div>
         ))}
       </div>
       <input
         type="text"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        className="border p-2 w-full"
-        placeholder="Type a message..."
+        value={messageInput}
+        onChange={(e) => setMessageInput(e.target.value)}
+        placeholder="Type a message"
+        className="border p-2 rounded w-full"
       />
-      <button onClick={sendMessage} className="bg-blue-500 text-white p-2 mt-2">
+      <button onClick={sendMessage} className="bg-blue-500 text-white py-2 px-4 rounded">
         Send
       </button>
     </div>

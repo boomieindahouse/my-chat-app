@@ -1,7 +1,7 @@
 // src/app/home/page.js
 "use client";
 
-import { useEffect, useState } from "react"; // เพิ่ม useEffect ที่นี่
+import { useEffect, useState } from "react"; // นำเข้า useEffect และ useState
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext"; // นำเข้า useAuth
 

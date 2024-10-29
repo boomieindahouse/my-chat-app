@@ -1,17 +1,18 @@
 "use client";
 
-import React, { useEffect, useState } from "react"; // เพิ่มการนำเข้า React
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function ChatPage({ params }) {
-  const { username } = React.use(params); // ใช้ React.use เพื่อดึงค่า username
+  const { username } = React.use(params);
   const router = useRouter();
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    if (!username) {
-      router.push("/home");
+    const token = localStorage.getItem("token"); // เช็คว่า token มีอยู่หรือไม่
+    if (!username || !token) {
+      router.push("/signin"); // ถ้าไม่มี username หรือ token ให้ไปที่หน้า sign in
     }
   }, [username, router]);
 
